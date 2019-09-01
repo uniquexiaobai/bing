@@ -1,83 +1,83 @@
 import React from 'react'
 import Head from 'next/head'
 import Link from 'next/link'
+import {format, subDays} from 'date-fns'
 
-const Home = ({ baseUrl, list }) => (
-  <div>
-    <Head>
-      <title>Home</title>
-    </Head>
+const getKeyList = (page = 1) => {
+    const now = new Date();
+    const offset = 30 * (page - 1);
+    const formatStr = 'yyyyMMdd';
+    const keyList = Array.from({length: 30}, (_, i) => format(subDays(now, i + offset), formatStr));
 
-    <div className='home'>
-        <h1 className='title'>必应图片</h1>
+    return keyList;
+}
 
-        <ul>
-            {list.map((key) => (
-                <li key={key}>
-                    <Link href={{ pathname: '/detail', query: { key } }}>
-                        <img loading="lazy" src={`${baseUrl}${key}.jpeg!s`} alt="" />
-                    </Link>
-                </li>
-            ))}
-        </ul>
-    </div>
+const Home = ({page}) => {
+    const baseUrl = 'https://unique-bing.oss-cn-beijing.aliyuncs.com/';
+    const list = getKeyList(page);
 
-    <style global jsx>{`
-        body {
-            margin: 0;
-        }
-    `}</style>
-    <style jsx>{`
-        .title {
-            text-align: center;
-        }
-        ul {
-            margin: 0;
-            padding: 0;
-            list-style-type: none;
-        }
-        li {
-            display: inline-block;
-            width: calc(100% / 3);
-            margin: 0;
-        }
-        @media only screen and (max-width: 980px) {
-            li {
-                width: 50%;
-            }
-        }
-        @media only screen and (max-width: 640px) {
-            li {
-                width: 100%;
-            }
-        }
-        img {
-            width: 100%;
-            vertical-align: middle;
-        }
-    `}</style>
-  </div>
-)
+    return (
+        <div>
+            <Head>
+                <title>Home</title>
+            </Head>
 
-const getKeyList = (year, month) => {
-    const len = new Date(year, month, 0).getDate();
-    const list = Array.from({length: len}, (val, index) => {
-        const y = '' + year;
-        const m = (month < 10 ? '0' : '') + month;
-        const d = (index + 1 < 10 ? '0' : '') + (index + 1);
-        return y + m + d;
-    });
+            <div className='home'>
+                <h1 className='title'>必应图片</h1>
 
-    return list;
-};
+                <ul>
+                    {list.map((key) => (
+                        <li key={key}>
+                            <Link href={{pathname: '/detail', query: {key}}}>
+                                <img src={`${baseUrl}${key}.jpeg!s`} alt={key} />
+                            </Link>
+                        </li>
+                    ))}
+                </ul>
+            </div>
 
-Home.getInitialProps = () => {
-    const baseUrl = 'https://unique-bing.oss-cn-beijing.aliyuncs.com/'
+            <style global jsx>{`
+                body {
+                    margin: 0;
+                }
+            `}</style>
+            <style jsx>{`
+                .title {
+                    text-align: center;
+                }
+                ul {
+                    margin: 0;
+                    padding: 0;
+                    list-style-type: none;
+                }
+                li {
+                    display: inline-block;
+                    width: calc(100% / 3);
+                    margin: 0;
+                }
+                @media only screen and (max-width: 980px) {
+                    li {
+                        width: 50%;
+                    }
+                }
+                @media only screen and (max-width: 640px) {
+                    li {
+                        width: 100%;
+                    }
+                }
+                img {
+                    width: 100%;
+                    vertical-align: middle;
+                }
+            `}</style>
+        </div>
+    )
+}
 
-    return {
-        baseUrl,
-        list: getKeyList(2017, 3) 
-    }
+Home.getInitialProps = ({query}) => {
+    const {page = 1} = query;
+
+    return {page}
 }
 
 export default Home
