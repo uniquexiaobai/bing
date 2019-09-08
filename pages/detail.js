@@ -1,33 +1,40 @@
-import React from 'react'
-import Head from 'next/head'
+import React from 'react';
+import Head from 'next/head';
 
-const Detail = ({imageUrl}) => {
+const Detail = ({id}) => {
+    const url = `https://unique-bing.oss-cn-beijing.aliyuncs.com/${id}.jpeg`;
+
     return (
-        <div>
+        <div className="detail">
             <Head>
                 <title>Detail</title>
             </Head>
 
-            <img src={imageUrl} alt="" />
+            <img src={url} alt={id} />
 
-            <style global jsx>{`
-                body {
-                    margin: 0;
-                }
-            `}</style>
             <style jsx>{`
+                .detail {
+                    position: absolute;
+                    left: 0;
+                    right: 0;
+                    top: 0;
+                    bottom: 0;
+                }
                 img {
                     width: 100%;
+                    height: 100%;
+                    vertical-align: middle;
+                    object-fit: cover;
                 }
             `}</style>
         </div>
-    )
-}
+    );
+};
 
 Detail.getInitialProps = ({query}) => {
-    const imageUrl = `https://unique-bing.oss-cn-beijing.aliyuncs.com/${query.key}.jpeg`;
+    const {id} = query;
 
-    return {imageUrl}
-}
+    return {id};
+};
 
-export default Detail
+export default Detail;

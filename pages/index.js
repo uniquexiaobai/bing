@@ -1,20 +1,24 @@
-import React from 'react'
-import Head from 'next/head'
-import Link from 'next/link'
-import {format, subDays} from 'date-fns'
+import React from 'react';
+import Head from 'next/head';
+import Link from 'next/link';
+import {format, subDays, differenceInDays} from 'date-fns';
+import Pagination from '../components/pagination';
 
-const getKeyList = (page = 1) => {
+import '../styles/base.css';
+
+const getIdList = (page = 1) => {
     const now = new Date();
     const offset = 30 * (page - 1);
     const formatStr = 'yyyyMMdd';
-    const keyList = Array.from({length: 30}, (_, i) => format(subDays(now, i + offset), formatStr));
+    const list = Array.from({length: 30}, (_, i) => format(subDays(now, i + offset), formatStr));
 
-    return keyList;
-}
+    return list;
+};
 
 const Home = ({page}) => {
     const baseUrl = 'https://unique-bing.oss-cn-beijing.aliyuncs.com/';
-    const list = getKeyList(page);
+    const totalPage = Math.floor(differenceInDays(new Date(), new Date(2017, 0, 1)) / 30);
+    const list = getIdList(page);
 
     return (
         <div>
@@ -23,32 +27,32 @@ const Home = ({page}) => {
             </Head>
 
             <div className='home'>
-                <h1 className='title'>必应图片</h1>
+                <div className='title'>
+                    <h1>必应图片</h1>
+                </div>
 
                 <ul>
-                    {list.map((key) => (
-                        <li key={key}>
-                            <Link href={{pathname: '/detail', query: {key}}}>
-                                <img src={`${baseUrl}${key}.jpeg!s`} alt={key} />
+                    {list.map((id) => (
+                        <li key={id}>
+                            <Link href={{pathname: '/detail', query: {id}}}>
+                                <img src={`${baseUrl}${id}.jpeg!s`} alt={id} />
                             </Link>
                         </li>
                     ))}
                 </ul>
             </div>
 
-            <style global jsx>{`
-                body {
-                    margin: 0;
-                }
-            `}</style>
+            <Pagination total={totalPage} page={page} />
+
             <style jsx>{`
+                .home {
+                    margin-bottom: 10px;
+                }
                 .title {
                     text-align: center;
-                }
-                ul {
-                    margin: 0;
-                    padding: 0;
-                    list-style-type: none;
+                    color: white;
+                    background: rebeccapurple;
+                    padding: 1px;
                 }
                 li {
                     display: inline-block;
@@ -71,13 +75,13 @@ const Home = ({page}) => {
                 }
             `}</style>
         </div>
-    )
-}
+    );
+};
 
 Home.getInitialProps = ({query}) => {
     const {page = 1} = query;
 
-    return {page}
-}
+    return {page};
+};
 
-export default Home
+export default Home;
